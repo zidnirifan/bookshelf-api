@@ -5,21 +5,6 @@ const addBookHandler = (request, h) => {
   const requestBody = request.payload;
   const { pageCount, readPage, name } = requestBody;
 
-  const id = nanoid(16);
-  const insertedAt = new Date().toISOString();
-  const updatedAt = insertedAt;
-  const finished = pageCount === readPage;
-
-  const newBook = {
-    ...requestBody,
-    id,
-    finished,
-    insertedAt,
-    updatedAt,
-  };
-
-  books.push(newBook);
-
   if (!name) {
     const response = h.response({
       status: 'fail',
@@ -41,6 +26,20 @@ const addBookHandler = (request, h) => {
     return response;
   }
 
+  const id = nanoid(16);
+  const insertedAt = new Date().toISOString();
+  const updatedAt = insertedAt;
+  const finished = pageCount === readPage;
+
+  const newBook = {
+    ...requestBody,
+    id,
+    finished,
+    insertedAt,
+    updatedAt,
+  };
+
+  books.push(newBook);
   const isSuccess = books.filter((book) => book.id === id).length > 0;
 
   if (isSuccess) {
@@ -63,7 +62,31 @@ const addBookHandler = (request, h) => {
   return response;
 };
 
-const getAllBooksHandler = () => {
+const getAllBooksHandler = (request) => {
+  const queryName = request.query.name;
+
+  if (queryName) {
+    const booksFiltered = books.filter((book) => {
+      const newBook = book.name.toLowerCase().includes(queryName.toLowerCase());
+      return newBook;
+    });
+
+    const booksMaped = booksFiltered.map((book) => {
+      const { id, name, publisher } = book;
+      const newBook = { id, name, publisher };
+      return newBook;
+    });
+
+    const response = {
+      status: 'success',
+      data: {
+        books: booksMaped,
+      },
+    };
+
+    return response;
+  }
+
   const allBooks = books.map((book) => {
     const { id, name, publisher } = book;
     const newBook = { id, name, publisher };
