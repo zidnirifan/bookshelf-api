@@ -63,14 +63,9 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooksHandler = (request) => {
-  const queryName = request.query.name;
+  const { name: queryName, reading, finished } = request.query;
 
-  if (queryName) {
-    const booksFiltered = books.filter((book) => {
-      const newBook = book.name.toLowerCase().includes(queryName.toLowerCase());
-      return newBook;
-    });
-
+  const getResponse = (booksFiltered) => {
     const booksMaped = booksFiltered.map((book) => {
       const { id, name, publisher } = book;
       const newBook = { id, name, publisher };
@@ -85,22 +80,40 @@ const getAllBooksHandler = (request) => {
     };
 
     return response;
-  }
-
-  const allBooks = books.map((book) => {
-    const { id, name, publisher } = book;
-    const newBook = { id, name, publisher };
-    return newBook;
-  });
-
-  const response = {
-    status: 'success',
-    data: {
-      books: allBooks,
-    },
   };
 
-  return response;
+  if (reading === '1') {
+    const booksFiltered = books.filter((book) => book.reading === true);
+
+    return getResponse(booksFiltered);
+  }
+  if (reading === '0') {
+    const booksFiltered = books.filter((book) => book.reading === false);
+
+    return getResponse(booksFiltered);
+  }
+
+  if (finished === '1') {
+    const booksFiltered = books.filter((book) => book.finished === true);
+
+    return getResponse(booksFiltered);
+  }
+  if (finished === '0') {
+    const booksFiltered = books.filter((book) => book.finished === false);
+
+    return getResponse(booksFiltered);
+  }
+
+  if (queryName) {
+    const booksFiltered = books.filter((book) => {
+      const newBook = book.name.toLowerCase().includes(queryName.toLowerCase());
+      return newBook;
+    });
+
+    return getResponse(booksFiltered);
+  }
+
+  return getResponse(books);
 };
 
 const getBookByIdHandler = (request, h) => {
