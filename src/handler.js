@@ -82,38 +82,30 @@ const getAllBooksHandler = (request) => {
     return response;
   };
 
-  if (reading === '1') {
-    const booksFiltered = books.filter((book) => book.reading === true);
+  let booksFiltered = books;
 
-    return getResponse(booksFiltered);
+  if (reading === '1') {
+    booksFiltered = booksFiltered.filter((book) => book.reading === true);
   }
   if (reading === '0') {
-    const booksFiltered = books.filter((book) => book.reading === false);
-
-    return getResponse(booksFiltered);
+    booksFiltered = booksFiltered.filter((book) => book.reading === false);
   }
 
   if (finished === '1') {
-    const booksFiltered = books.filter((book) => book.finished === true);
-
-    return getResponse(booksFiltered);
+    booksFiltered = booksFiltered.filter((book) => book.finished === true);
   }
   if (finished === '0') {
-    const booksFiltered = books.filter((book) => book.finished === false);
-
-    return getResponse(booksFiltered);
+    booksFiltered = booksFiltered.filter((book) => book.finished === false);
   }
 
   if (queryName) {
-    const booksFiltered = books.filter((book) => {
+    booksFiltered = booksFiltered.filter((book) => {
       const newBook = book.name.toLowerCase().includes(queryName.toLowerCase());
       return newBook;
     });
-
-    return getResponse(booksFiltered);
   }
 
-  return getResponse(books);
+  return getResponse(booksFiltered);
 };
 
 const getBookByIdHandler = (request, h) => {
